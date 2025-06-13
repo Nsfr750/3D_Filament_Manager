@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Filament xmlns="http://www.prusa3d.com/filament/1.0">
+  <name>
+    <brand>ELEGOO</brand>
+    <material>PLA+</material>
+    <color>White</color>
+  </name>
+  <description />
+  <properties>
+    <diameter>1.75</diameter>
+    <density>1.24</density>
+  </properties>
+  <usage>
+    <initial_quantity>1000.0</initial_quantity>
+    <used_quantity>0.0</used_quantity>
+    <cost_per_kg>24.0</cost_per_kg>
+    <last_used>2025-06-13 18:25</last_used>
+  </usage>
+</Filament>
