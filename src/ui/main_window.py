@@ -46,9 +46,19 @@ class MainWindow(ttk.Frame):
         menubar.add_cascade(label=tr('language_menu'), menu=lang_menu)
 
 
+        # View menu
+        view_menu = tk.Menu(menubar, tearoff=0)
+        view_menu.add_checkbutton(
+            label=tr('dark_mode'),
+            command=self.controller.toggle_theme,
+            variable=tk.BooleanVar(value=getattr(self.controller, 'dark_mode', True))
+        )
+        menubar.add_cascade(label=tr('view'), menu=view_menu)
+        
+        # Help menu
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label=tr('help'), command=self.controller.show_help)
-        help_menu.add_command(label=tr('about'), command=self.controller.show_about_dialog)
+        help_menu.add_command(label=tr('about'), command=self.controller.show_about)
         help_menu.add_command(label=tr('sponsor'), command=self.controller.show_sponsor_dialog)
         menubar.add_cascade(label=tr('help'), menu=help_menu)
 

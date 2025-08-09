@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog
 import logging
+import json
+import os
 
 from src.data.filament_manager import FilamentManager
 from src.ui.main_window import MainWindow
@@ -10,6 +12,7 @@ from src.ui.about import show_about_dialog
 from src.ui.help import show_help_dialog
 from src.ui.sponsor import show_sponsor_dialog
 from src.ui.lang import set_language, tr
+from src.ui.theme import apply_dark_theme, apply_light_theme
 
 class FilamentManagerApp:
     """Main application controller."""
@@ -17,7 +20,15 @@ class FilamentManagerApp:
     def __init__(self, root):
         self.root = root
         self.logger = logging.getLogger(__name__)
-
+        
+        # Load settings
+        self.settings_file = 'settings.json'
+        self.settings = self._load_settings()
+        
+        # Apply theme
+        self.dark_mode = self.settings.get('dark_mode', True)
+        self._apply_theme()
+        
         self.data_manager = FilamentManager()
         self.main_window = MainWindow(root, self)
         
@@ -170,18 +181,59 @@ class FilamentManagerApp:
         self.logger.info("Reloading filaments from disk.")
         self.load_initial_data()
 
-    def show_about_dialog(self):
-        self.logger.info("Showing About dialog.")
-        show_about_dialog(self.root)
+    def _load_settings(self):
+        """Load application settings from file."""
+        default_settings = {
+            'dark_mode': True,
+            'language': 'en'
+        }
+        
+        if os.path.exists(self.settings_file):
+            try:
+                with open(self.settings_file, 'r') as f:
+                    return {**default_settings, **json.load(f)}
+            except Exception as e:
+                self.logger.error(f"Error loading settings: {e}")
+                return default_settings
+        return default_settings
+    
+    def _save_settings(self):
+        """Save current settings to file."""
+        try:
+            with open(self.settings_file, 'w') as f:
+                json.dump(self.settings, f, indent=4)
+        except Exception as e:
+            self.logger.error(f"Error saving settings: {e}")
+    
+    def toggle_theme(self):
+        """Toggle between dark and light theme."""
+        self.dark_mode = not self.dark_mode
+        self.settings['dark_mode'] = self.dark_mode
+        self._save_settings()
+        self._apply_theme()
+    
+    def _apply_theme(self):
+        """Apply the current theme based on settings."""
+        if self.dark_mode:
+            apply_dark_theme(self.root)
+        else:
+            apply_light_theme(self.root)
+    
+    def show_about(self):
+        """Show the about dialog."""
+        from src.ui.about import show_about_dialog
+        show_about_dialog(self.root, dark_mode=self.dark_mode)
 
     def show_help(self):
         """Show the help dialog."""
         self.logger.info("Showing Help dialog.")
-        show_help_dialog(self.root)
+        from src.ui.help import show_help_dialog
+        show_help_dialog(self.root, dark_mode=self.dark_mode)
 
     def show_sponsor_dialog(self):
         self.logger.info("Showing Sponsor dialog.")
-        show_sponsor_dialog(self.root)
+        from src.ui.sponsor import show_sponsor_dialog
+        show_sponsor_dialog(self.root, dark_mode=self.dark_mode)
 
     def run(self):
         self.root.mainloop()

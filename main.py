@@ -10,16 +10,6 @@ def main():
 
     # Setup error logging first
     ErrorLogger.setup_logging()
-    
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler("filament_manager.log"),
-            logging.StreamHandler()
-        ]
-    )
 
     # Create the main application window
     root = tk.Tk()
