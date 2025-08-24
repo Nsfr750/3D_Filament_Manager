@@ -1,0 +1,6 @@
+Profile report for FilamentManagerApp
+Generated: 2025-08-24 21:28:43.348323
+Time taken: 0.4960 seconds
+
+TOP 50 FUNCTIONS BY CUMULATIVE TIME
+==================================================

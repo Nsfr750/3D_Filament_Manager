@@ -3,7 +3,30 @@ from tkinter import ttk
 from .lang import tr
 
 def show_help_dialog(parent, dark_mode=False):
-    """Displays the Help dialog box with dark mode support."""
+    """
+    Display the Help dialog box with application usage instructions.
+    
+    This function creates a modal dialog window that provides users with information
+    on how to use the application. The dialog supports both light and dark themes
+    and presents help items in a bulleted list format.
+    
+    Args:
+        parent: The parent Tkinter window that will own this dialog.
+        dark_mode: If True, uses dark theme colors; otherwise uses light theme.
+                  Defaults to False.
+                  
+    The help dialog includes instructions for:
+    - Main interface navigation
+    - Sorting filament lists
+    - Searching for filaments
+    - Selecting filaments
+    - Adding new filaments
+    - Editing existing filaments
+    - Importing/exporting filament data
+    
+    The dialog is centered on screen and made modal to ensure users read the help
+    information before continuing to use the application.
+    """
     dialog = tk.Toplevel(parent)
     dialog.title(tr('help_dialog_title'))
     

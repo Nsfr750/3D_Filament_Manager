@@ -9,14 +9,45 @@ import tkinter as tk
 from tkinter import messagebox
 
 class ErrorLogger:
-    """Utility class for handling application errors and logging."""
+    """
+    A utility class for centralized error handling and logging in the application.
+    
+    This class provides methods to log errors with context information, save detailed
+    error reports, and display user-friendly error dialogs. It's designed to be used
+    as a singleton through its class methods.
+    
+    Key Features:
+    - Automatic setup of file and console logging
+    - Detailed error reporting with stack traces and context
+    - User-friendly error dialogs with error IDs
+    - Thread-safe error logging
+    - JSON-formatted error dumps for debugging
+    
+    Attributes:
+        LOG_DIR (str): Directory where log files are stored (default: 'logs' in app root)
+        LOG_FILE (str): Path to the main log file (default: 'logs/error.log')
+    """
     
     LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "logs")
     LOG_FILE = os.path.join(LOG_DIR, "error.log")
     
     @classmethod
     def setup_logging(cls) -> None:
-        """Set up logging configuration."""
+        """
+        Set up and configure the logging system.
+        
+        This method should be called once when the application starts. It:
+        - Creates the log directory if it doesn't exist
+        - Configures both file and console logging
+        - Sets up a global exception handler
+        - Configures log levels (DEBUG for file, INFO for console)
+        
+        The log format includes timestamp, logger name, log level, and message.
+        Uncaught exceptions are automatically logged at CRITICAL level.
+        
+        Note:
+            This method is called automatically when the module is imported.
+        """
         try:
             os.makedirs(cls.LOG_DIR, exist_ok=True)
             
@@ -53,7 +84,36 @@ class ErrorLogger:
         context: Optional[Dict[str, Any]] = None,
         level: str = "error"
     ) -> str:
-        """Log an error with context information."""
+        """
+        Log an error with optional context information.
+        
+        This is the main method for logging errors in the application. It:
+        - Generates a unique error ID
+        - Captures the full stack trace
+        - Includes any provided context data
+        - Writes a detailed JSON error report
+        
+        Args:
+            error: The exception that was raised
+            context: Optional dictionary with additional context about the error
+            level: Log level ('debug', 'info', 'warning', 'error', 'critical')
+                   Defaults to 'error'
+                   
+        Returns:
+            str: A unique error ID that can be shown to users for support
+            
+        Example:
+            try:
+                # Some operation that might fail
+                result = 1 / 0
+            except Exception as e:
+                error_id = ErrorLogger.log_error(
+                    e,
+                    context={"operation": "division", "values": [1, 0]},
+                    level="error"
+                )
+                print(f"An error occurred. ID: {error_id}")
+        """
         try:
             error_id = datetime.now().strftime("%Y%m%d%H%M%S")
             logger = logging.getLogger("ErrorLogger")
@@ -95,7 +155,25 @@ class ErrorLogger:
         title: str = "Error",
         context: Optional[Dict[str, Any]] = None
     ) -> None:
-        """Show a user-friendly error dialog with error details."""
+        """
+        Display a user-friendly error dialog with error details.
+        
+        This method logs the error and shows a dialog box to the user with:
+        - A simple error message
+        - The error ID for support reference
+        - Option to view technical details
+        - A button to copy the error information
+        
+        Args:
+            parent: The parent Tkinter window for the dialog
+            error: The exception that was raised
+            title: Title for the error dialog (default: "Error")
+            context: Optional dictionary with additional context about the error
+            
+        The error is automatically logged with log_error() before showing the dialog.
+        If the error is a known type (like FileNotFoundError), a more specific
+        message may be shown.
+        """
         error_id = cls.log_error(error, context, level="error")
         
         error_type = error.__class__.__name__
@@ -113,4 +191,5 @@ class ErrorLogger:
         messagebox.showerror(title, full_message, parent=parent)
 
 # Set up logging when module is imported
+# This ensures that any uncaught exceptions are properly logged
 ErrorLogger.setup_logging()

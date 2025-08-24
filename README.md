@@ -1,52 +1,127 @@
 # 3D Filament Manager
 
+![3D Filament Manager](assets/logo.png)
+
 A desktop application for managing your 3D printing filament inventory. Keep track of materials, colors, usage, costs, and slicer settings in one place.
 
-## Features
+## ✨ Features
 
-* **Comprehensive Filament Profiles**: Store detailed information including brand, material, color, diameter, density, quantity, and cost.
-* **Slicer Settings**: Save specific slicer settings for each filament profile.
-* **Advanced Sorting & Filtering**: Easily find filaments by searching, and sort the list by any column.
-* **Import/Export**: Backup and share your filament profiles using ZIP archives.
-* **Multi-Language Support**: Available in English and Italian.
-* **Intuitive UI**: A clean and user-friendly interface built with Tkinter.
-* **Cross-Platform**: Runs on any system with Python and Tkinter installed.
+* **🌐 Multi-Language Support**: Available in English and Italian
+* **🎨 Modern UI**: Clean interface with emoji icons and theme support (light/dark mode)
+* **📊 Comprehensive Filament Management**:
+  * Store detailed filament information (brand, material, color, diameter, etc.)
+  * Track filament usage and remaining quantity
+  * Calculate material costs
+* **⚙️ Slicer Integration**:
+  * Save and manage slicer profiles (Cura, PrusaSlicer, eQuidiSlicer)
+  * Custom print profiles for different printers
+* **🔍 Advanced Search & Filtering**:
+  * Search by any filament property
+  * Sort by any column
+  * Filter by material type, color, or custom tags
+* **📂 Import/Export**:
+  * Backup and restore your filament library
+  * Share profiles with others
+  * Bulk import/export support
+* **🔒 Data Security**:
+  * Settings saved in `config/` directory
+  * No internet connection required
+  * Local data storage
 
-## Requirements
+## 🚀 Requirements
 
 * Python 3.8+
-* `lxml` (optional, for improved XML parsing performance)
+* Required packages (automatically installed):
+  * `lxml` - Fast XML processing
+  * `pillow` - Image processing for icons
 
-## Installation & Usage
+## 🛠️ Installation
 
-1. **Clone the repository:**
+### Prerequisites
 
-    ```bash
-    git clone https://github.com/Nsfr750/3D_Filament_Manager.git
-    cd 3D_Filament_Manager
-    ```
+* Python 3.8 or higher
+* Git (optional, for development)
 
-2. **Install dependencies:**
+### Installation Steps
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+1. **Clone the repository** (or download as ZIP):
 
-3. **Run the application:**
+   ```bash
+   git clone https://github.com/Nsfr750/3D_Filament_Manager.git
+   cd 3D_Filament_Manager
+   ```
 
-    ```bash
-    python main.py
-    ```
+2. **Create and activate a virtual environment** (recommended):
 
-The application will create an `fdm` directory in the project root to store your filament profiles.
+   ```bash
+   # On Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+   
+   # On macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-## Contributing
+3. **Install dependencies**:
 
-Contributions are welcome! If you have a feature request, bug report, or want to contribute code, please feel free to open an issue or submit a pull request on the [GitHub repository](https://github.com/Nsfr750/3D_Filament_Manager).
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## License
+4. **Run the application**:
 
-This project is licensed under the **GNU General Public License v3.0**. See the `LICENSE` file for details.
+   ```bash
+   python main.py
+   ```
+
+### Data Storage
+
+* Filament profiles are stored in the `fdm/` directory
+* Application settings are saved in the `config/` directory
+* Logs are written to the `logs/` directory
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+* Report bugs by opening an [issue](https://github.com/Nsfr750/3D_Filament_Manager/issues)
+* Suggest new features or improvements
+* Submit pull requests with code changes
+* Help improve documentation
+* Translate the application to new languages
+
+### Development Setup
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code Style
+
+* Follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) guidelines
+* Use type hints for better code clarity
+* Write docstrings for all public functions and classes
+
+## 📜 License
+
+This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.
+
+## 🙏 Support
+
+If you find this project useful, consider supporting its development:
+
+* ⭐ Star the repository
+* 🐛 Report issues
+* 💡 Suggest new features
+* 💰 [Sponsor the project on GitHub](https://github.com/sponsors/Nsfr750)
+
+## 📞 Contact
+
+* GitHub: [@Nsfr750](https://github.com/Nsfr750)
+* Email: nsfr750@yandex.com
 
 ---
 
@@ -54,7 +129,5 @@ This project is licensed under the **GNU General Public License v3.0**. See the 
 
 If you find this application useful, please consider supporting the developer:
 
-* **Patreon**: [https://www.patreon.com/Nsfr750](https://www.patreon.com/Nsfr750)
 * **PayPal**: [https://paypal.me/3dmega](https://paypal.me/3dmega)
 * **GitHub**: [https://github.com/Nsfr750](https://github.com/Nsfr750)
-* **Discord**: [https://discord.gg/BvvkUEP9](https://discord.gg/BvvkUEP9)

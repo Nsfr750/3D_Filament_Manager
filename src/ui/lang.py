@@ -1,4 +1,16 @@
-# Simple multilanguage support for English and Italian
+"""
+Multilingual support for the 3D Filament Manager application.
+
+This module provides internationalization (i18n) capabilities, allowing the application
+to be displayed in multiple languages. It includes:
+- Built-in translations for English and Italian
+- Support for adding new languages
+- Persistent language preference storage
+- Simple translation function (tr) for UI strings
+
+The module automatically loads the user's language preference from a config file
+and falls back to English if the requested language is not available.
+"""
 
 import json
 import os
@@ -7,12 +19,12 @@ LANGUAGES = {
     'en': {
         # Main Window
         'title': '3D Filament Manager',
-        'file': '🗃️ File',
-        'view': '👁️‍🗨️ View',
+        'file': 'File',
+        'view': 'View',
         'dark_mode': 'Dark Mode',
-        'language': '🌐 Language',
+        'language': 'Language',
         'reload_filaments': 'Reload Filaments',
-        'help': '❓ Help',
+        'help': 'Help',
         'import_filaments': 'Import Filaments',
         'export_filaments': 'Export Filaments',
         'exit': 'Exit',
@@ -126,7 +138,7 @@ LANGUAGES = {
         # Sponsor Dialog
         'thank_you_for_using': 'Thank you for using',
         'app_title': '3D Filament Manager',
-        'if_you_find_useful': 'This application is developed and maintained by a single developer.\nYour support helps keep the project alive and allows for new features and improvements.',
+        'if_you_find_useful': 'This application is developed and maintained by a single developer.\n',
         'your_contribution_helps': 'Your contribution helps keep the project alive and allows for new features and improvements.',
         'sponsor': 'Sponsor',
         'sponsor_on_github': 'Sponsor on GitHub',
@@ -141,12 +153,12 @@ LANGUAGES = {
     'it': {
         # Main Window
         'title': 'Manager Filamenti 3D',
-        'file': '🗃️ File',
-        'view': '👁️‍🗨️ Visualizza',
+        'file': 'File',
+        'view': 'Visualizza',
         'dark_mode': 'Modalità Scura',
-        'language': '🌐 Lingua',
+        'language': 'Lingua',
         'reload_filaments': 'Ricarica Filamenti',
-        'help': '❓ Aiuto',
+        'help': 'Aiuto',
         'import_filaments': 'Importa Filamenti',
         'export_filaments': 'Esporta Filamenti',
         'exit': 'Esci',
@@ -260,7 +272,7 @@ LANGUAGES = {
         # Sponsor Dialog
         'thank_you_for_using': 'Grazie per usare',
         'app_title': '3D Filament Manager',
-        'if_you_find_useful': 'Questa applicazione è sviluppata e gestita da un unico sviluppatore.\nIl tuo sostegno contribuisce a mantenere vivo il progetto e consente l\'introduzione di nuove funzionalità e miglioramenti.',
+        'if_you_find_useful': 'Questa applicazione è sviluppata e gestita da un unico sviluppatore.\n',
         'your_contribution_helps': 'Il tuo contributo aiuta a mantenere vivo il progetto e consente l\'introduzione di nuove funzionalità e miglioramenti.',
         'sponsor': 'Sponsorizza',
         'sponsor_on_github': 'Sponsorizza su GitHub',
@@ -278,8 +290,16 @@ CONFIG_PATH = os.path.join(os.path.expanduser('~'), '.3d_filament_manager_lang.j
 
 _current_lang = 'en'
 
-def _load_lang():
-    """Load language preference from config file."""
+def _load_lang() -> None:
+    """
+    Load the user's language preference from the configuration file.
+    
+    This function reads the language code from the config file located at
+    ~/.3d_filament_manager_lang.json. If the file doesn't exist or contains
+    an invalid language code, it falls back to English ('en') as the default.
+    
+    The function updates the global _current_lang variable with the loaded language code.
+    """
     global _current_lang
     if os.path.exists(CONFIG_PATH):
         try:
@@ -289,31 +309,93 @@ def _load_lang():
         except (json.JSONDecodeError, IOError):
             _current_lang = 'en'
 
-def _save_lang(lang_code):
-    """Save language preference to config file."""
+def _save_lang(lang_code: str) -> None:
+    """
+    Save the specified language code to the configuration file.
+    
+    Args:
+        lang_code: The language code to save (e.g., 'en', 'it').
+        
+    The function creates or updates the config file at ~/.3d_filament_manager_lang.json
+    with the specified language code. This ensures the user's language preference
+    persists between application sessions.
+    """
     try:
         with open(CONFIG_PATH, 'w') as f:
             json.dump({'language': lang_code}, f)
     except IOError:
         pass
 
-def set_language(lang_code):
-    """Set the application language."""
+def set_language(lang_code: str) -> None:
+    """
+    Change the application's current language.
+    
+    Args:
+        lang_code: The language code to switch to (e.g., 'en', 'it').
+                  Must be one of the available languages returned by get_available_languages().
+                  
+    The function updates the current language and saves the preference to the config file.
+    If the specified language is not available, it falls back to English ('en') and
+    raises a ValueError.
+    
+    Raises:
+        ValueError: If the specified language code is not supported.
+    """
     global _current_lang
     if lang_code in LANGUAGES:
         _current_lang = lang_code
         _save_lang(_current_lang)
 
-def get_available_languages():
-    """Get a list of available language codes."""
+def get_available_languages() -> list[str]:
+    """
+    Get a list of all available language codes in the application.
+    
+    Returns:
+        A list of language code strings (e.g., ['en', 'it']).
+        
+    Example:
+        >>> get_available_languages()
+        ['en', 'it']
+    """
     return list(LANGUAGES.keys())
 
-def get_language():
-    """Get the current application language."""
+def get_language() -> str:
+    """
+    Get the currently active language code.
+    
+    Returns:
+        str: The current language code (e.g., 'en' for English, 'it' for Italian).
+        
+    The returned value will always be one of the language codes available in LANGUAGES.
+    """
     return _current_lang
 
-def tr(key, **kwargs):
-    """Translate a key to the current language."""
+def tr(key: str, **kwargs) -> str:
+    """
+    Translate a text key to the current application language.
+    
+    This is the main translation function used throughout the application to get
+    localized strings. It looks up the provided key in the current language's
+    dictionary and returns the corresponding translation.
+    
+    Args:
+        key: The translation key to look up in the current language dictionary.
+        **kwargs: Optional format arguments to be substituted into the translated string.
+                 The string should contain Python format placeholders (e.g., {name})
+                 which will be replaced by the named arguments.
+                 
+    Returns:
+        str: The translated string with any format placeholders replaced by the
+             provided keyword arguments.
+             
+    Example:
+        # In English: 'Hello, {name}!' with name='John' becomes 'Hello, John!'
+        greeting = tr('greeting', name='John')
+        
+    Note:
+        If the key is not found in the current language, it will fall back to English.
+        If the key is not found in English, it will return the key itself.
+    """
     text = LANGUAGES.get(_current_lang, LANGUAGES['en']).get(key, key)
     return text.format(**kwargs)
 

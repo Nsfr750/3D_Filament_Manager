@@ -1,11 +1,34 @@
 """
-Theme configuration for the application.
+Theme configuration for the 3D Filament Manager application.
+
+This module provides functions to apply different visual themes to the Tkinter-based
+user interface, including light and dark modes. The theming is applied consistently
+across all Tkinter and ttk widgets to ensure a cohesive look and feel.
+
+The module uses the 'clam' theme as a base for dark mode and the default theme
+for light mode, with custom styling for various widgets.
 """
 import tkinter as tk
 from tkinter import ttk
 
 def apply_dark_theme(root):
-    """Apply dark theme to the application."""
+    """
+    Apply a dark theme to the application.
+    
+    This function configures all Tkinter and ttk widgets to use a dark color scheme
+    with light text. The theme is designed to be easy on the eyes in low-light
+    conditions.
+    
+    Args:
+        root: The root Tkinter window to apply the theme to.
+        
+    The dark theme includes:
+    - Dark background colors (#2b2b2b)
+    - Light text colors (#ffffff)
+    - Blue accent color (#1e88e5)
+    - Styled buttons, entries, comboboxes, and treeview widgets
+    - Custom styling for notebook tabs and other UI elements
+    """
     # Background colors
     bg_color = "#2b2b2b"
     fg_color = "#ffffff"
@@ -94,7 +117,19 @@ def apply_dark_theme(root):
              background=[('active', '#4b4b4b')])
 
 def apply_light_theme(root):
-    """Apply light theme to the application."""
+    """
+    Apply a light theme to the application.
+    
+    This function resets the application to use the default Tkinter/ttk theme,
+    which provides a light color scheme with dark text. This is the default
+    appearance of the application.
+    
+    Args:
+        root: The root Tkinter window to apply the theme to.
+        
+    The light theme uses the system's default Tkinter theme with minimal
+    custom styling to ensure a clean, native look across different platforms.
+    """
     # Reset to default theme
     style = ttk.Style()
     style.theme_use('default')

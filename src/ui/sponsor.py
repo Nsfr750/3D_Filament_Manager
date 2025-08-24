@@ -4,7 +4,28 @@ import webbrowser
 from .lang import tr
 
 def show_sponsor_dialog(parent, dark_mode=False):
-    """Displays the Sponsor dialog box with dark mode support."""
+    """
+    Display the Sponsor dialog box with options to support the project.
+    
+    This function creates a modal dialog that provides users with various ways to support
+    the development of the application. It includes buttons that link to different
+    sponsorship platforms (GitHub Sponsors, Patreon, PayPal, etc.). The dialog supports
+    both light and dark themes.
+    
+    Args:
+        parent: The parent Tkinter window that will own this dialog.
+        dark_mode: If True, uses dark theme colors; otherwise uses light theme.
+                  Defaults to False.
+                  
+    The dialog includes:
+    - A thank you message for using the application
+    - Buttons to support the project through various platforms
+    - Each button opens the corresponding URL in the default web browser
+    - A close button to dismiss the dialog
+    
+    The dialog is centered on screen and made modal to ensure users see the support
+    options before continuing to use the application.
+    """
     dialog = tk.Toplevel(parent)
     dialog.title(tr('sponsor'))
     
@@ -51,7 +72,7 @@ def show_sponsor_dialog(parent, dark_mode=False):
     # Define buttons
     buttons = [
         (tr('sponsor_on_github'), "https://github.com/sponsors/Nsfr750"),
-        (tr('join_discord'), "https://discord.gg/BvvkUEP9"),
+        (tr('join_discord'), "https://discord.gg/ryqNeuRYjD"),
         (tr('buy_me_a_coffee'), "https://paypal.me/3dmega"),
         (tr('join_the_patreon'), "https://www.patreon.com/Nsfr750")
     ]

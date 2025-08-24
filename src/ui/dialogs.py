@@ -2,9 +2,38 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 class AddEditDialog(tk.Toplevel):
-    """A dialog for adding or editing a filament."""
+    """
+    A modal dialog for adding new filaments or editing existing ones.
+    
+    This dialog provides a form with fields for all filament properties including:
+    - Basic information (brand, material, color, description)
+    - Physical properties (diameter, density)
+    - Quantity and cost information
+    - Custom slicer settings in a text area
+    
+    The dialog can be used in two modes:
+    1. Add mode: When creating a new filament (filament_data is None)
+    2. Edit mode: When modifying an existing filament (filament_data contains current values)
+    
+    Attributes:
+        controller: The parent controller that manages filament data
+        filament_data: Dictionary containing existing filament data (in edit mode)
+        original_filename: Original filename if editing an existing filament
+        entries: Dictionary mapping field names to their Entry widgets
+    """
 
     def __init__(self, parent, controller, title="Add/Edit Filament", filament_data=None, original_filename=None):
+        """
+        Initialize the Add/Edit Filament dialog.
+        
+        Args:
+            parent: The parent Tkinter window
+            controller: The controller that will handle the filament data
+            title: Dialog title (default: "Add/Edit Filament")
+            filament_data: Dictionary containing existing filament data for editing,
+                         or None for creating a new filament
+            original_filename: Original filename if editing, None for new filaments
+        """
         super().__init__(parent)
         self.transient(parent)
         self.title(title)
@@ -30,6 +59,18 @@ class AddEditDialog(tk.Toplevel):
         self.wait_window(self)
 
     def body(self, master):
+        """
+        Create and arrange the dialog's body widgets.
+        
+        This method creates all the form fields and text areas needed for entering
+        filament information. It's called automatically during dialog initialization.
+        
+        Args:
+            master: The parent widget for the dialog body
+            
+        Returns:
+            The widget that should have initial focus (brand field)
+        """
         master.columnconfigure(1, weight=1)
 
         labels = [
@@ -59,6 +100,12 @@ class AddEditDialog(tk.Toplevel):
         return self.entries["brand"]
 
     def _populate_fields(self):
+        """
+        Populate form fields with existing filament data.
+        
+        This method is called when editing an existing filament to fill in the form
+        with the current values. It handles type conversion and default values.
+        """
         # Helper to safely get and convert data to string for UI
         def get_str(key, default=''):
             # Ensure that we handle None gracefully by converting to the default
@@ -82,6 +129,12 @@ class AddEditDialog(tk.Toplevel):
             self.slicer_text.insert('1.0', slicer_settings)
 
     def buttonbox(self):
+        """
+        Create and arrange the dialog's action buttons.
+        
+        This method creates the OK and Cancel buttons at the bottom of the dialog
+        and sets up keyboard bindings for Enter (OK) and Escape (Cancel) keys.
+        """
         box = ttk.Frame(self)
         ttk.Button(box, text="OK", width=10, command=self.ok, default=tk.ACTIVE).pack(side=tk.LEFT, padx=5, pady=5)
         ttk.Button(box, text="Cancel", width=10, command=self.cancel).pack(side=tk.LEFT, padx=5, pady=5)
@@ -90,6 +143,15 @@ class AddEditDialog(tk.Toplevel):
         box.pack()
 
     def ok(self, event=None):
+        """
+        Handle the OK button click or Enter key press.
+        
+        This method validates the form data and, if valid, applies the changes
+        and closes the dialog.
+        
+        Args:
+            event: The event that triggered this method (default: None)
+        """
         if not self.validate():
             self.initial_focus.focus_set()
             return
@@ -99,10 +161,30 @@ class AddEditDialog(tk.Toplevel):
         self.cancel()
 
     def cancel(self, event=None):
+        """
+        Handle the Cancel button click or Escape key press.
+        
+        This method closes the dialog without saving any changes.
+        
+        Args:
+            event: The event that triggered this method (default: None)
+        """
         self.master.focus_set()
         self.destroy()
 
     def validate(self):
+        """
+        Validate the form data.
+        
+        This method checks that all required fields have valid values before
+        allowing the dialog to close.
+        
+        Returns:
+            bool: True if all validations pass, False otherwise
+            
+        Note:
+            Shows an error message to the user if validation fails.
+        """
         for key, entry in self.entries.items():
             if 'quantity' in key or 'cost' in key or 'diameter' in key or 'density' in key:
                 try:
@@ -116,6 +198,16 @@ class AddEditDialog(tk.Toplevel):
         return True
 
     def apply(self):
+        """
+        Process the form data and update the filament.
+        
+        This method is called when the form is submitted with valid data.
+        It collects the values from the form fields, converts them to the
+        appropriate types, and calls the controller to save the changes.
+        
+        The actual saving of data is delegated to the controller, which handles
+        both creating new filaments and updating existing ones.
+        """
         # Map widget keys back to data model keys for saving
         key_map = {
             "diameter_mm": "diameter",

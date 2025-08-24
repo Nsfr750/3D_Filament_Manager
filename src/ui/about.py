@@ -5,7 +5,28 @@ from .version import get_version
 from .lang import tr
 
 def show_about_dialog(parent, dark_mode=False):
-    """Displays the About dialog box with dark mode support."""
+    """
+    Display the About dialog box with application information.
+    
+    This function creates a modal dialog window that shows information about the application,
+    including version, author, and a brief description. The dialog supports both light and
+    dark themes.
+    
+    Args:
+        parent: The parent Tkinter window that will own this dialog.
+        dark_mode: If True, uses dark theme colors; otherwise uses light theme.
+                  Defaults to False.
+                  
+    The dialog includes:
+    - Application title
+    - Version information
+    - Author information
+    - Description text
+    - A close button
+    
+    The dialog is centered on screen and made modal to prevent interaction with
+    the parent window until closed.
+    """
     dialog = tk.Toplevel(parent)
     dialog.title(tr('about_dialog_title'))
     

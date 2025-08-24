@@ -2,66 +2,68 @@
 
 ## High Priority
 
-- [x] Add support for bulk import/export of filament profiles
-- [x] Implement filament usage tracking (remaining quantity, cost calculation)
-- [x] Add data validation in the filament editor
-- [x] Improve error handling for malformed XML files
-- [x] Fix duplicate loading of XML files
-- [x] Add support for custom print profiles (Cura, PrusaSlicer, eQuidiSlicer)
-- [x] Implement a more advanced search with filters (by material, temperature, etc.)
-- [x] Add sorting functionality to the filament list
-
-## Medium Priority
-
-- [x] Fix duplicate loading of XML files
-
-## Low Priority
-
-- [x] Implement a plugin system for extending functionality
+* [ ] Add support for filament spool tracking (barcodes/QR codes)
+* [ ] Implement filament cost analysis and reporting
+* [ ] Add support for filament price history tracking
+* [ ] Implement automatic backup system
 
 ## Documentation
 
-- [ ] Add docstrings to all Python functions
-- [ ] Create a user manual
-- [ ] Add API documentation for developers
-- [ ] Add tooltips and help text in the UI
+* [x] Update README with latest features and screenshots
+* [x] Update CHANGELOG with recent changes
+* [ ] Add docstrings to all Python functions
+* [ ] Add API documentation for developers
 
 ## Recently Completed
 
-- Added sortable columns in the filament list
-- Enhanced search functionality with real-time filtering
-- Improved XML file handling and error reporting
-- Added tabbed interface for better organization of filament details
-- Implemented cost calculation and remaining quantity tracking
-- Added "Mark Used" feature to track filament consumption
-- Added sortable columns in the filament list
-- Enhanced search functionality with real-time filtering
-- Improved UI with tabbed interface for details view
-- Added filament usage tracking features
-- Implemented bulk import/export functionality
-- Fixed duplicate loading of XML files
-- Added support for viewing, adding, and editing filament profiles
-- Implemented search functionality
-- Created basic documentation
-- **Major Rewrite and Bug Fixing**: Completed a major rewrite of the application and fixed critical bugs.
+* **v1.1.0 (2025-08-24)**:
+  * Added emoji icons to menu items
+  * Implemented settings persistence in config/
+  * Added dark/light theme toggle
+  * Fixed menu implementation issues
+  * Improved code organization and documentation
+
+* **v1.0.0 (2025-06-13)**:
+  * Complete application rewrite with modular architecture
+  * Full-featured GUI with filament management
+  * Dynamic filtering and sorting
+  * CRUD operations for filament profiles
+  * Multi-language support (English/Italian)
+  * Import/export functionality
+  * Comprehensive logging system
 
 ## Future Enhancements (Backlog)
 
-- [ ] **UI/UX Improvements**:
-  - [ ] Add icons to buttons and menu items.
-  - [ ] Implement a theming system (e.g., light/dark mode).
-  - [ ] Improve the layout and responsiveness of the UI.
-- [ ] **Functionality**:
-  - [ ] Add an "Undo/Redo" feature for edits.
-  - [ ] Implement automatic backup of filament profiles.
-  - [ ] Add support for custom fields in filament profiles.
-  - [ ] Integrate with popular slicers (e.g., PrusaSlicer, Cura) to directly import/export settings.
-- [ ] **Documentation**:
-  - [ ] Create comprehensive user documentation.
-  - [ ] Add more screenshots and GIFs to the `README.md`.
-- [ ] **Packaging**:
-  - [ ] Create standalone executables for Windows, macOS, and Linux using PyInstaller or similar tools.
+### UI/UX Improvements
+
+* [ ] Dashboard with filament usage statistics
+* [ ] Drag and drop support for filament images
+* [ ] Customizable columns in the filament list
+* [ ] Batch editing of filament properties
+* [ ] Add icons to buttons and menu items
+* [ ] Improve the layout and responsiveness of the UI
+
+### Features
+
+* [ ] Filament inventory management (low stock alerts)
+* [ ] Print job cost calculator
+* [ ] Integration with popular slicer software
+* [ ] Cloud sync for filament library
+* [ ] Add an "Undo/Redo" feature for edits
+* [ ] Implement automatic backup of filament profiles
+* [ ] Add support for custom fields in filament profiles
+* [ ] Integrate with popular slicers (PrusaSlicer, Cura) to directly import/export settings
+
+### Performance
+
+* [ ] Optimize large filament library performance
+* [ ] Add lazy loading for filament images
+* [ ] Implement caching for frequently accessed data
+
+### Packaging
+
+* [ ] Create standalone executables for Windows, macOS, and Linux using PyInstaller or similar tools
 
 ---
 
-Last updated: June 12, 2025
+Last updated: August 24, 2025

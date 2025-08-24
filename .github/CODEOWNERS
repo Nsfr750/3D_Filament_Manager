@@ -1,0 +1,49 @@
+# Default owners for everything in the repo
+*       @Nsfr750
+
+# Documentation
+/README.md @Nsfr750
+/CHANGELOG.md @Nsfr750
+/CONTRIBUTING.md @Nsfr750
+
+# Source code
+/src/ @Nsfr750
+
+# Tests
+/tests/ @Nsfr750
+
+# GitHub Actions workflows
+/.github/workflows/ @Nsfr750
+
+# Project configuration files
+/setup.py @Nsfr750
+/requirements.txt @Nsfr750
+
+# License and legal
+/LICENSE @Nsfr750
+
+# GitHub specific files
+/.github/ @Nsfr750
+
+# Python specific
+/Pipfile @Nsfr750
+/Pipfile.lock @Nsfr750
+/pyproject.toml @Nsfr750
+
+# Build and distribution
+/dist/ @Nsfr750
+/build/ @Nsfr750
+
+# Environment and IDE specific files
+/.vscode/ @Nsfr750
+/.idea/ @Nsfr750
+*.code-workspace @Nsfr750
+
+# Local development
+/.venv/ @Nsfr750
+/.env @Nsfr750
+/.env.* @Nsfr750
+
+# Logs and local data
+/logs/ @Nsfr750
+/profile_results/ @Nsfr750

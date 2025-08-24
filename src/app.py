@@ -15,9 +15,29 @@ from src.ui.lang import set_language, tr
 from src.ui.theme import apply_dark_theme, apply_light_theme
 
 class FilamentManagerApp:
-    """Main application controller."""
+    """
+    Main application controller for the 3D Filament Manager.
+    
+    This class manages the main application window, user interactions, and coordinates
+    between the data layer (FilamentManager) and the UI layer (MainWindow).
+    
+    Attributes:
+        root: The root Tkinter window.
+        logger: Logger instance for application logging.
+        settings_file: Path to the settings JSON file.
+        settings: Dictionary containing application settings.
+        dark_mode: Boolean indicating if dark mode is enabled.
+        data_manager: Instance of FilamentManager for data operations.
+        main_window: Main application window UI component.
+    """
 
     def __init__(self, root):
+        """
+        Initialize the FilamentManager application.
+        
+        Args:
+            root: The root Tkinter window.
+        """
         self.root = root
         self.logger = logging.getLogger(__name__)
         
@@ -35,34 +55,83 @@ class FilamentManagerApp:
         self.load_initial_data()
 
     def load_initial_data(self):
+        """Load initial filament data with progress feedback."""
         self.logger.info("Loading initial data...")
-        loaded_count, corrupted_count = self.data_manager.load_filaments()
-        self.update_view()
-        if corrupted_count > 0:
-            messagebox.showwarning(
-                "Load Warning",
-                f"{loaded_count} filaments loaded successfully.\n"
-                f"{corrupted_count} files were corrupted and could not be loaded. "
-                "Check logs for details."
-            )
+        
+        # Show loading indicator
+        self.main_window.show_loading(True, "Loading filament data...")
+        
+        try:
+            # Update the view - FilamentManager already loaded metadata in __init__
+            self.update_view()
+            
+            # Get the count of loaded filaments
+            loaded_count = len(self.data_manager.get_all_filaments())
+            self.logger.info(f"Successfully loaded {loaded_count} filaments")
+            
+        except Exception as e:
+            self.logger.error(f"Error loading initial data: {e}")
+            messagebox.showerror("Error", "Failed to load filament data. Check logs for details.")
+        finally:
+            # Hide loading indicator
+            self.main_window.show_loading(False)
+            
+    def reload_filaments(self):
+        """Reload all filament data from disk."""
+        self.logger.info("Reloading filaments from disk.")
+        self.load_initial_data()
 
     def update_view(self):
-        filaments = self.data_manager.get_all_filaments()
-        query = self.main_window.get_search_query().lower()
-
+        """Update the view with filtered and sorted filaments."""
+        query = self.main_window.get_search_query().strip()
+        
+        # Use the search index for faster searching
         if query:
-            filtered_filaments = {}
-            for filename, data in filaments.items():
-                if (query in str(data.get('brand', '')).lower() or
-                    query in str(data.get('material', '')).lower() or
-                    query in str(data.get('color', '')).lower() or
-                    query in filename.lower()):
-                    filtered_filaments[filename] = data
-            filaments = filtered_filaments
-
+            filaments = self.data_manager.search_filaments(query)
+        else:
+            filaments = self.data_manager.get_all_filaments()
+            
+        # Apply sorting
+        self._apply_sorting(filaments)
+        
+        # Update the UI
         self.main_window.update_filament_list(filaments)
+        
+    def _apply_sorting(self, filaments: dict) -> None:
+        """Apply sorting to the filaments dictionary in-place."""
+        if not filaments:
+            return
+            
+        sort_key = self.main_window.sort_by.lower()
+        reverse = self.main_window.sort_order == 'desc'
+        
+        # Create a list of tuples (sort_key, filename) for sorting
+        items = []
+        for filename, data in filaments.items():
+            if sort_key == 'filename':
+                sort_value = filename.lower()
+            else:
+                sort_value = str(data.get(sort_key, '')).lower()
+            items.append((sort_value, filename, data))
+        
+        # Sort the items
+        items.sort(key=lambda x: x[0], reverse=reverse)
+        
+        # Rebuild the filaments dictionary in sorted order
+        filaments.clear()
+        for _, filename, data in items:
+            filaments[filename] = data
 
     def sort_filaments(self, column):
+        """
+        Sort the filament list by the specified column.
+        
+        Toggles between ascending and descending order if the same column is clicked
+        multiple times. Updates the view to reflect the new sort order.
+        
+        Args:
+            column (str): The column name to sort by.
+        """
         if self.main_window.sort_by == column:
             self.main_window.sort_order = 'desc' if self.main_window.sort_order == 'asc' else 'asc'
         else:
@@ -82,20 +151,44 @@ class FilamentManagerApp:
 
     def show_details(self, filename):
         """Show details for a given filament."""
-        filament_data = self.data_manager.get_all_filaments().get(filename)
+        # Use get_filament to load full data on demand
+        filament_data = self.data_manager.get_filament(filename)
         if filament_data:
             self.main_window.update_details_panel(filament_data)
         else:
             self.main_window.clear_details_panel()
 
     def filter_filaments(self, *args):
+        """
+        Apply the current search filter to the filament list.
+        
+        This method is typically called when the search criteria changes.
+        It triggers an update of the view with the filtered results.
+        
+        Args:
+            *args: Variable length argument list (unused, for callback compatibility).
+        """
         self.update_view()
 
     def add_filament(self):
+        """
+        Open the dialog to add a new filament.
+        
+        Creates and displays a new AddEditDialog in 'add' mode.
+        The user can enter details for a new filament profile.
+        """
         self.logger.info("Opening 'Add New Filament' dialog.")
         AddEditDialog(self.root, self, title="Add New Filament")
 
     def edit_filament(self):
+        """
+        Open the dialog to edit the selected filament.
+        
+        Retrieves the currently selected filament's data and opens an
+        AddEditDialog pre-populated with the filament's current values.
+        
+        Shows a warning if no filament is selected.
+        """
         selected_items = self.main_window.filament_list.selection()
         if not selected_items:
             messagebox.showwarning("No Selection", "Please select a filament to edit.")
@@ -125,6 +218,17 @@ class FilamentManagerApp:
                 messagebox.showerror(tr('error_title'), f"{tr('delete_error_msg')}\n{e}")
 
     def save_filament(self, data, original_filename=None):
+        """
+        Save filament data to disk.
+        
+        Handles both new filament creation and updates to existing filaments.
+        Reloads the filament list after successful save.
+        
+        Args:
+            data (dict): Dictionary containing the filament's data.
+            original_filename (str, optional): Filename of the filament being updated.
+                                             If None, a new filament is created.
+        """
         self.logger.info(f"Saving filament data. Original filename: {original_filename}")
         try:
             self.data_manager.save_filament(data, original_filename)
@@ -231,9 +335,21 @@ class FilamentManagerApp:
         show_help_dialog(self.root, dark_mode=self.dark_mode)
 
     def show_sponsor_dialog(self):
+        """
+        Display the sponsor/donation dialog.
+        
+        Shows information about supporting the project through donations
+        or other means of sponsorship.
+        """
         self.logger.info("Showing Sponsor dialog.")
         from src.ui.sponsor import show_sponsor_dialog
         show_sponsor_dialog(self.root, dark_mode=self.dark_mode)
 
     def run(self):
+        """
+        Start the main application event loop.
+        
+        This method should be called after initializing the application
+        to begin processing user input and updating the UI.
+        """
         self.root.mainloop()
