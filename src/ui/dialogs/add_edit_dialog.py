@@ -148,7 +148,7 @@ class AddEditDialog(tk.Toplevel):
             ("Remaining Weight (g)", "remaining_weight", "1000"),
             ("Price", "price", ""),
             ("Price per Unit", "price_per_unit", ""),
-            ("Currency", "currency", "USD"),
+            ("Currency", "currency", "EUR"),
             ("Purchase URL", "purchase_url", "")
         ]
         
@@ -236,7 +236,8 @@ class AddEditDialog(tk.Toplevel):
 
     def cancel(self, event=None):
         """Close the dialog."""
-        self.parent.focus_set()
+        if self.master:
+            self.master.focus_set()
         self.destroy()
 
     def validate(self):

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from src.data.filament_manager import FilamentManager
 from src.ui.main_window import MainWindow
-from src.ui.dialogs import AddEditDialog
+from src.ui.dialogs import AddEditDialog, show_backup_dialog, BarcodeDialog, PriceTrackerDialog
 from src.config import APP_DATA_DIR, BACKUP_DIR, ensure_directories_exist
 from src.version_info import APP_VERSION
 from src.ui.about import show_about_dialog
@@ -503,6 +503,42 @@ class FilamentManagerApp:
         except Exception as e:
             self.logger.error(f"Error updating backup settings: {e}")
             return False
+    
+    def show_barcode_utility(self):
+        """Show the barcode utility dialog if available."""
+        try:
+            from src.ui.dialogs.barcode_dialog import BarcodeDialog
+            BarcodeDialog(self.root)
+        except ImportError as e:
+            messagebox.showerror(
+                "Barcode Functionality Not Available",
+                "The barcode utility requires additional packages to be installed.\n\n"
+                "Please install the required packages by running:\n"
+                "pip install python-barcode Pillow"
+            )
+            self.logger.error(f"Barcode utility not available: {e}")
+        except Exception as e:
+            self.logger.error(f"Error showing barcode utility: {e}")
+            messagebox.showerror(
+                tr('error'),
+                f"{tr('error_loading_barcode_utility')}: {str(e)}"
+            )
+    
+    def show_price_tracker(self, filament_data=None):
+        """
+        Show the price tracker dialog.
+        
+        Args:
+            filament_data: Optional dictionary containing filament data to track
+        """
+        try:
+            PriceTrackerDialog(self.root, filament_data)
+        except Exception as e:
+            self.logger.error(f"Error showing price tracker: {e}")
+            messagebox.showerror(
+                tr('error'),
+                f"{tr('error_loading_price_tracker')}: {str(e)}"
+            )
     
     def run(self):
         """

@@ -37,6 +37,9 @@ LANGUAGES = {
         'details_title': 'Details',
         'properties_title': 'Properties',
         'slicer_settings': 'Slicer Settings',
+        'tools': 'Tools',
+        'price_tracker': 'Price Tracker',
+        'barcode_utility': 'Barcode Utility',
 
         # Treeview Columns
         'col_brand': 'Brand',
@@ -207,6 +210,9 @@ LANGUAGES = {
         'details_title': 'Dettagli',
         'properties_title': 'Proprietà',
         'slicer_settings': 'Impostazioni Slicer',
+        'tools': 'Strumenti',
+        'price_tracker': 'Tracker Prezzo',
+        'barcode_utility': 'Gestione CodiceBarre',
 
         # Treeview Columns
         'col_brand': 'Marca',

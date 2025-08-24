@@ -172,6 +172,26 @@ class MainWindow(ttk.Frame):
         self.dark_mode_var.trace_add('write', lambda *_: update_theme_icon())
         menubar.add_cascade(label=tr('view'), menu=view_menu)
         
+        # Tools menu
+        tools_menu = tk.Menu(menubar, tearoff=0)
+        
+        # Add Price Tracker
+        tools_menu.add_command(
+            label=f"📊 {tr('price_tracker')}",
+            command=self.controller.show_price_tracker
+        )
+        
+        # Add Barcode Utility if available
+        if hasattr(self.controller, 'show_barcode_utility'):
+            tools_menu.add_command(
+                label=f"📱 {tr('barcode_utility')}",
+                command=self.controller.show_barcode_utility
+            )
+            
+        # Only show the Tools menu if there are available tools
+        if tools_menu.index('end') is not None:
+            menubar.add_cascade(label=tr('tools'), menu=tools_menu)
+        
         # Help menu with icons
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(

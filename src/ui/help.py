@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import os
+from PIL import Image, ImageTk
 from .lang import tr
 
 def show_help_dialog(parent, dark_mode=False):
@@ -36,19 +38,43 @@ def show_help_dialog(parent, dark_mode=False):
     
     dialog.configure(bg=bg_color)
     
-    # Create main frame
-    main_frame = ttk.Frame(dialog, padding=20)
-    main_frame.pack(fill=tk.BOTH, expand=True)
+    # Create main container frame
+    container = ttk.Frame(dialog)
+    container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+    
+    # Create left frame for logo
+    left_frame = ttk.Frame(container)
+    left_frame.pack(side=tk.LEFT, padx=(0, 20))
+    
+    # Load and display logo
+    try:
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'assets', 'logo.png')
+        if os.path.exists(logo_path):
+            # Open and resize the image
+            img = Image.open(logo_path)
+            img = img.resize((80, 80), Image.Resampling.LANCZOS)
+            logo_img = ImageTk.PhotoImage(img)
+            
+            # Create label to display the logo
+            logo_label = ttk.Label(left_frame, image=logo_img)
+            logo_label.image = logo_img  # Keep a reference
+            logo_label.pack(pady=10)
+    except Exception as e:
+        print(f"Error loading logo: {e}")
+    
+    # Create right frame for text content
+    main_frame = ttk.Frame(container)
+    main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
     
     # Configure style
     style = ttk.Style()
     style.configure('Help.TLabel', background=bg_color, foreground=fg_color, font=('Arial', 10))
-    style.configure('Title.TLabel', background=bg_color, foreground=fg_color, font=('Arial', 12, 'bold'))
+    style.configure('Title.TLabel', background=bg_color, foreground=fg_color, font=('Arial', 14, 'bold'))
     style.configure('Bullet.TLabel', background=bg_color, foreground=fg_color, font=('Arial', 10))
     
     # Add title
     title_label = ttk.Label(main_frame, text=tr('help_title'), style='Title.TLabel')
-    title_label.pack(pady=(0, 15))
+    title_label.pack(anchor='w', pady=(0, 15))
     
     # Add help items
     help_items = [
@@ -61,16 +87,42 @@ def show_help_dialog(parent, dark_mode=False):
         tr('help_import_export')
     ]
     
+    # Create a frame for the scrollable content
+    canvas = tk.Canvas(main_frame, bg=bg_color, highlightthickness=0)
+    scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+    scrollable_frame = ttk.Frame(canvas)
+    
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+    
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+    
+    # Pack the canvas and scrollbar
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    
     for item in help_items:
-        item_frame = ttk.Frame(main_frame)
-        item_frame.pack(anchor='w', pady=2, fill=tk.X)
+        item_frame = ttk.Frame(scrollable_frame)
+        item_frame.pack(anchor='w', pady=4, fill=tk.X, padx=(0, 10))
         
-        # Add bullet point
-        bullet = ttk.Label(item_frame, text="•", style='Bullet.TLabel')
-        bullet.pack(side=tk.LEFT, padx=(0, 5))
+        # Add bullet point with a larger, colored dot
+        bullet_canvas = tk.Canvas(item_frame, width=15, height=15, bg=bg_color, highlightthickness=0)
+        bullet_canvas.pack(side=tk.LEFT, padx=(0, 8))
+        bullet_canvas.create_oval(3, 3, 12, 12, fill="#4285F4", outline="")  # Google Blue
         
-        # Add item text
-        label = ttk.Label(item_frame, text=item, style='Help.TLabel', wraplength=350, justify=tk.LEFT)
+        # Add item text with better styling
+        label = ttk.Label(
+            item_frame, 
+            text=item, 
+            style='Help.TLabel', 
+            wraplength=350, 
+            justify=tk.LEFT
+        )
         label.pack(side=tk.LEFT, fill=tk.X, expand=True)
     
     # Add close button
@@ -79,11 +131,12 @@ def show_help_dialog(parent, dark_mode=False):
     
     # Center the dialog
     dialog.update_idletasks()
-    width = 450
-    height = 400
+    width = 600  # Increased width to accommodate the logo and better text layout
+    height = 500  # Increased height for better content visibility
     x = (dialog.winfo_screenwidth() // 2) - (width // 2)
     y = (dialog.winfo_screenheight() // 2) - (height // 2)
     dialog.geometry(f'{width}x{height}+{x}+{y}')
+    dialog.minsize(width, 400)  # Prevent the dialog from being resized too small
     
     # Make the dialog modal
     dialog.transient(parent)

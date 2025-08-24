@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-08-25
+
+### Added in v1.2.0
+
+* **Price Analysis**: Added interactive price analysis with visualizations
+* **Price Tracking**: Implemented price history tracking for filaments
+* **Vendor Comparison**: Added vendor price comparison chart
+* **Price Statistics**: Added price statistics (min, max, avg, trend)
+* **Time Range Filtering**: Added time-based filtering for price history
+
+### Changed in v1.2.0
+
+* **Dependencies**: Added matplotlib for data visualization
+* **UI**: Enhanced price tracker dialog with new analysis features
+* **Documentation**: Updated README with new features and requirements
+
 ## [1.1.1] - 2025-08-24
 
 ### Fixed in v1.1.1

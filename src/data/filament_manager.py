@@ -471,16 +471,28 @@ class FilamentManager:
                     
                     # Clean up the filename
                     filename = "".join(c if c.isalnum() or c in '_-.' else '_' for c in base_name)
-                    filename = filename.strip('_') + ".fdm_material"
+                    filename = filename.strip('_') + ".xml.fdm_material"
                     
                     # Ensure the filename is unique
                     counter = 1
-                    base, ext = os.path.splitext(filename)
+                    base = os.path.splitext(filename)[0]  # Remove any existing extension
                     while os.path.exists(os.path.join(FDM_DIR, filename)):
-                        filename = f"{base}_{counter}{ext}"
+                        filename = f"{base}_{counter}.xml.fdm_material"
                         counter += 1
                 else:
-                    filename = original_filename
+                    # Ensure the original filename has the correct extension
+                    if not original_filename.endswith('.xml.fdm_material'):
+                        base = os.path.splitext(original_filename)[0]
+                        filename = f"{base}.xml.fdm_material"
+                        
+                        # If the new filename already exists, add a counter
+                        counter = 1
+                        while os.path.exists(os.path.join(FDM_DIR, filename)):
+                            filename = f"{base}_{counter}.xml.fdm_material"
+                            counter += 1
+                    else:
+                        filename = original_filename
+                        
                     # If we're overwriting, remove from cache
                     if filename in self.filament_cache:
                         del self.filament_cache[filename]

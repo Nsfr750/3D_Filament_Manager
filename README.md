@@ -12,6 +12,9 @@ A desktop application for managing your 3D printing filament inventory. Keep tra
   * Store detailed filament information (brand, material, color, diameter, etc.)
   * Track filament usage and remaining quantity
   * Calculate material costs
+  * Price tracking and history
+  * Interactive price analysis with visualizations
+  * Vendor price comparison
 * **⚙️ Slicer Integration**:
   * Save and manage slicer profiles (Cura, PrusaSlicer, eQuidiSlicer)
   * Custom print profiles for different printers
@@ -34,6 +37,7 @@ A desktop application for managing your 3D printing filament inventory. Keep tra
 * Required packages (automatically installed):
   * `lxml` - Fast XML processing
   * `pillow` - Image processing for icons
+  * `matplotlib` - Data visualization for price analysis
 
 ## 🛠️ Installation
 

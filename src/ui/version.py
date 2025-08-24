@@ -13,8 +13,8 @@ Version numbers follow the MAJOR.MINOR.PATCH format:
 An optional qualifier (alpha, beta, rc, etc.) can be added for pre-release versions.
 """
 VERSION_MAJOR = 1
-VERSION_MINOR = 1
-VERSION_PATCH = 1
+VERSION_MINOR = 2
+VERSION_PATCH = 0
 
 # Additional version qualifiers
 VERSION_QUALIFIER = ''  # Could be 'alpha', 'beta', 'rc', or ''

@@ -2,15 +2,20 @@
 
 ## Recently Completed
 
+* **v1.2.0 (2025-08-25)**:
+  * Implemented interactive price analysis with visualizations
+  * Added price history tracking for filaments
+  * Created vendor price comparison chart
+  * Added price statistics (min, max, avg, trend)
+  * Implemented time-based filtering for price history
+  * Integrated matplotlib for data visualization
+
 * **v1.1.1 (2025-08-24)**:
-  * Implemented automatic backup system (v1.1.1)
+  * Implemented automatic backup system
   * Fixed theme initialization in backup dialog
   * Added Italian translations for backup UI
   * Improved error handling in backup management
   * Added backup scheduling options
-  * Added support for filament spool tracking (barcodes/QR codes)
-  * Added support for filament price history tracking
-  * Added support for filament cost analysis and reporting
 
 ## Documentation
 
@@ -38,7 +43,9 @@
 
 ### UI/UX Improvements
 
-* [ ] Dashboard with filament usage statistics
+* [ ] Dashboard with filament usage and price statistics
+  * [ ] Price trend predictions
+  * [ ] Cost per print estimation
 * [ ] Drag and drop support for filament images
 * [ ] Customizable columns in the filament list
 * [ ] Batch editing of filament properties
