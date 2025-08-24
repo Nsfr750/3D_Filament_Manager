@@ -1,25 +1,96 @@
 import os
 import json
 from pathlib import Path
-from typing import Dict, Any, Optional
-from src.ui.version import get_version
+from typing import Dict, Any, Optional, List, Union
+from .version_info import APP_VERSION, VERSION_INFO, get_version, get_version_info
+from dataclasses import dataclass, field, asdict
+from enum import Enum
 
 # Get the absolute path of the project root directory
 # This assumes the script is run from the project's root or the src directory
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Correctly define the path to the filament data directory
-FDM_DIR = os.path.join(PROJECT_ROOT, "fdm")
+# Application version (imported from version_info.py)
 
-# Define the path for log files
-LOG_DIR = os.path.join(PROJECT_ROOT, "logs")
-CONFIG_DIR = os.path.join(PROJECT_ROOT, "config")
+# Application data directories
+APP_DATA_DIR = os.path.join(os.path.expanduser("~"), ".3d_filament_manager")
+BACKUP_DIR = os.path.join(APP_DATA_DIR, "backups")
+LOG_DIR = os.path.join(APP_DATA_DIR, "logs")
+CONFIG_DIR = os.path.join(APP_DATA_DIR, "config")
+FDM_DIR = os.path.join(APP_DATA_DIR, "fdm")
+
+# Configuration files
 SETTINGS_FILE = os.path.join(CONFIG_DIR, "settings.json")
+
+# Ensure all required directories exist
+def ensure_directories_exist():
+    """Ensure all required application directories exist."""
+    os.makedirs(APP_DATA_DIR, exist_ok=True)
+    os.makedirs(BACKUP_DIR, exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
+    os.makedirs(CONFIG_DIR, exist_ok=True)
+    os.makedirs(FDM_DIR, exist_ok=True)
+
+# Backup configuration
+class BackupFrequency(str, Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    ON_STARTUP = "on_startup"
+    ON_EXIT = "on_exit"
+    MANUAL = "manual"
+
+@dataclass
+class BackupConfig:
+    """Configuration for automatic backups."""
+    enabled: bool = True
+    frequency: BackupFrequency = BackupFrequency.WEEKLY
+    max_backups: int = 10
+    include_logs: bool = True
+    backup_on_startup: bool = True
+    backup_on_exit: bool = True
+    last_backup: Optional[str] = None
+    backup_dir: str = BACKUP_DIR
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'enabled': self.enabled,
+            'frequency': self.frequency.value,
+            'max_backups': self.max_backups,
+            'include_logs': self.include_logs,
+            'backup_on_startup': self.backup_on_startup,
+            'backup_on_exit': self.backup_on_exit,
+            'last_backup': self.last_backup,
+            'backup_dir': self.backup_dir
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'BackupConfig':
+        """Create from dictionary."""
+        config = cls()
+        for key, value in data.items():
+            if hasattr(config, key):
+                if key == 'frequency' and value is not None:
+                    setattr(config, key, BackupFrequency(value))
+                else:
+                    setattr(config, key, value)
+        return config
 
 # Default settings
 DEFAULT_SETTINGS = {
     "dark_mode": True,
-    "language": "en"
+    "language": "en",
+    "backup": {
+        "enabled": True,
+        "frequency": "weekly",
+        "max_backups": 10,
+        "include_logs": True,
+        "backup_on_startup": True,
+        "backup_on_exit": True,
+        "last_backup": None,
+        "backup_dir": os.path.join(PROJECT_ROOT, "backups")
+    }
 }
 
 def load_settings() -> Dict[str, Any]:
@@ -78,5 +149,12 @@ def update_setting(key: str, value: Any) -> bool:
 # Load settings when module is imported
 settings = load_settings()
 
+# Initialize backup config
+backup_config = BackupConfig.from_dict(settings.get('backup', {}))
+
 # Application Info
+APP_NAME = "3D Filament Manager"
 APP_VERSION = get_version()
+
+# Ensure backup directory exists
+os.makedirs(backup_config.backup_dir, exist_ok=True)

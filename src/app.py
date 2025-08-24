@@ -3,16 +3,20 @@ from tkinter import messagebox, filedialog
 import logging
 import json
 import os
+from datetime import datetime
+from pathlib import Path
 
 from src.data.filament_manager import FilamentManager
 from src.ui.main_window import MainWindow
 from src.ui.dialogs import AddEditDialog
-from src.config import APP_VERSION
+from src.config import APP_DATA_DIR, BACKUP_DIR, ensure_directories_exist
+from src.version_info import APP_VERSION
 from src.ui.about import show_about_dialog
 from src.ui.help import show_help_dialog
 from src.ui.sponsor import show_sponsor_dialog
 from src.ui.lang import set_language, tr
 from src.ui.theme import apply_dark_theme, apply_light_theme
+from src.utils.backup_manager import BackupManager
 
 class FilamentManagerApp:
     """
@@ -48,6 +52,37 @@ class FilamentManagerApp:
         # Apply theme
         self.dark_mode = self.settings.get('dark_mode', True)
         self._apply_theme()
+        
+        # Ensure all required directories exist
+        ensure_directories_exist()
+        
+        # Initialize backup manager with settings
+        self.backup_settings = self.settings.get('backup', {
+            'enabled': True,
+            'frequency': 'daily',
+            'max_backups': 10,
+            'include_logs': True,
+            'backup_on_startup': True,
+            'backup_on_exit': True,
+            'backup_dir': BACKUP_DIR
+        })
+        
+        # Ensure backup directory exists
+        os.makedirs(self.backup_settings['backup_dir'], exist_ok=True)
+        
+        # Initialize backup manager with settings
+        backup_config = {
+            'backup_dir': self.backup_settings['backup_dir'],
+            'max_backups': self.backup_settings['max_backups'],
+            'auto_backup': self.backup_settings['enabled'],
+            'backup_on_exit': self.backup_settings['backup_on_exit'],
+            'include_logs': self.backup_settings['include_logs']
+        }
+        self.backup_manager = BackupManager(backup_config)
+        
+        # Create initial backup if enabled
+        if self.backup_settings.get('backup_on_startup', True):
+            self.root.after(1000, self._create_startup_backup)
         
         self.data_manager = FilamentManager()
         self.main_window = MainWindow(root, self)
@@ -345,6 +380,130 @@ class FilamentManagerApp:
         from src.ui.sponsor import show_sponsor_dialog
         show_sponsor_dialog(self.root, dark_mode=self.dark_mode)
 
+    def _create_startup_backup(self):
+        """Create a backup on application startup if enabled in settings."""
+        try:
+            if self.backup_settings.get('enabled', True) and self.backup_settings.get('backup_on_startup', True):
+                self.logger.info("Creating startup backup...")
+                data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+                include_logs = self.backup_settings.get('include_logs', True)
+                backup_path = self.backup_manager.create_backup(data_dir=data_dir, include_logs=include_logs)
+                if backup_path:
+                    self.logger.info(f"Startup backup created: {backup_path}")
+                else:
+                    self.logger.warning("Failed to create startup backup")
+        except Exception as e:
+            self.logger.error(f"Error during startup backup: {e}")
+    
+    def _create_exit_backup(self):
+        """Create a backup on application exit if enabled in settings."""
+        try:
+            if self.backup_settings.get('enabled', True) and self.backup_settings.get('backup_on_exit', True):
+                self.logger.info("Creating exit backup...")
+                data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+                include_logs = self.backup_settings.get('include_logs', True)
+                backup_path = self.backup_manager.create_backup(data_dir=data_dir, include_logs=include_logs)
+                if backup_path:
+                    self.logger.info(f"Exit backup created: {backup_path}")
+                else:
+                    self.logger.warning("Failed to create exit backup")
+        except Exception as e:
+            self.logger.error(f"Error during exit backup: {e}")
+    
+    def create_backup(self):
+        """Create a manual backup of the application data."""
+        try:
+            data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+            include_logs = self.backup_settings.get('include_logs', True)
+            backup_path = self.backup_manager.create_backup(data_dir=data_dir, include_logs=include_logs)
+            if backup_path:
+                messagebox.showinfo(tr('success'), tr('backup_created'))
+                self.logger.info(f"Manual backup created: {backup_path}")
+                return True
+            else:
+                messagebox.showerror(tr('error'), tr('backup_failed'))
+                return False
+        except Exception as e:
+            self.logger.error(f"Error creating backup: {e}")
+            messagebox.showerror(tr('error'), f"{tr('backup_failed')}: {str(e)}")
+            return False
+    
+    def restore_backup(self, backup_path=None):
+        """
+        Restore application data from a backup.
+        
+        Args:
+            backup_path: Path to the backup file to restore from. If None, a file dialog will be shown.
+        """
+        try:
+            if backup_path is None:
+                backup_path = filedialog.askopenfilename(
+                    title=tr('select_backup'),
+                    filetypes=[("ZIP files", "*.zip"), ("All files", "*.*")],
+                    initialdir=self.backup_settings['backup_dir']
+                )
+                if not backup_path:
+                    return False
+            
+            # Confirm before restoring
+            if not messagebox.askyesno(
+                tr('confirm'), 
+                tr('confirm_restore'),
+                parent=self.root
+            ):
+                return False
+            
+            # Perform the restore
+            if self.backup_manager.restore_backup(backup_path):
+                messagebox.showinfo(tr('success'), tr('backup_restored'))
+                self.logger.info(f"Successfully restored from backup: {backup_path}")
+                
+                # Reload data after restore
+                self.data_manager = FilamentManager()
+                self.update_view()
+                return True
+            else:
+                messagebox.showerror(tr('error'), tr('restore_failed'))
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error restoring backup: {e}")
+            messagebox.showerror(tr('error'), f"{tr('restore_failed')}: {str(e)}")
+            return False
+    
+    def manage_backups(self):
+        """Open the backup management dialog."""
+        try:
+            from src.ui.dialogs.backup_dialog import show_backup_dialog
+            show_backup_dialog(self.root)
+        except Exception as e:
+            self.logger.error(f"Error opening backup dialog: {e}")
+            messagebox.showerror(tr('error'), f"Failed to open backup manager: {str(e)}")
+    
+    def update_backup_settings(self, new_settings):
+        """
+        Update backup settings and save them to the config.
+        
+        Args:
+            new_settings: Dictionary containing the new backup settings.
+        """
+        try:
+            self.backup_settings.update(new_settings)
+            self.settings['backup'] = self.backup_settings
+            self._save_settings()
+            
+            # Update backup manager with new settings
+            self.backup_manager.max_backups = self.backup_settings.get('max_backups', 10)
+            self.backup_manager.include_logs = self.backup_settings.get('include_logs', True)
+            
+            # Ensure backup directory exists
+            os.makedirs(self.backup_settings['backup_dir'], exist_ok=True)
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"Error updating backup settings: {e}")
+            return False
+    
     def run(self):
         """
         Start the main application event loop.
@@ -352,4 +511,9 @@ class FilamentManagerApp:
         This method should be called after initializing the application
         to begin processing user input and updating the UI.
         """
-        self.root.mainloop()
+        try:
+            self.root.mainloop()
+        finally:
+            # Create backup on exit if enabled
+            if hasattr(self, 'backup_settings') and self.backup_settings.get('enabled', True) and self.backup_settings.get('backup_on_exit', True):
+                self._create_exit_backup()

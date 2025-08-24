@@ -10,8 +10,8 @@ from collections import defaultdict
 from functools import lru_cache
 import threading
 
-from src.config import FDM_DIR
-from src.utils.error_logger import ErrorLogger
+from ..config import FDM_DIR
+from ..utils.error_logger import ErrorLogger
 
 class SearchIndex:
     """

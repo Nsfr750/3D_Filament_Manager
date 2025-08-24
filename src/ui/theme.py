@@ -116,6 +116,66 @@ def apply_dark_theme(root):
     style.map('Treeview.Heading',
              background=[('active', '#4b4b4b')])
 
+def get_theme():
+    """
+    Get the current theme settings.
+    
+    Returns:
+        dict: A dictionary containing the current theme settings.
+    """
+    return {
+        'dark_mode': {
+            'bg': '#2b2b2b',
+            'fg': '#ffffff',
+            'accent': '#1e88e5',
+            'entry_bg': '#3c3c3c',
+            'button_bg': '#3c3c3c',
+            'button_fg': '#ffffff',
+            'button_active_bg': '#1e88e5',
+            'button_active_fg': '#ffffff',
+            'tree_bg': '#3c3c3c',
+            'tree_fg': '#ffffff',
+            'tree_selected_bg': '#1e88e5',
+            'tree_selected_fg': '#ffffff',
+            'tree_heading_bg': '#2b2b2b',
+            'tree_heading_fg': '#ffffff',
+            'tree_heading_active_bg': '#1e88e5',
+            'tree_heading_active_fg': '#ffffff',
+            'tab_bg': '#2b2b2b',
+            'tab_fg': '#ffffff',
+            'tab_selected_bg': '#1e88e5',
+            'tab_selected_fg': '#ffffff',
+            'tab_active_bg': '#1e88e5',
+            'tab_active_fg': '#ffffff',
+            'tab_active_fill': '#1e88e5',
+        },
+        'light_mode': {
+            'bg': '#f0f0f0',
+            'fg': '#000000',
+            'accent': '#0078d7',
+            'entry_bg': '#ffffff',
+            'button_bg': '#f0f0f0',
+            'button_fg': '#000000',
+            'button_active_bg': '#e5f3ff',
+            'button_active_fg': '#000000',
+            'tree_bg': '#ffffff',
+            'tree_fg': '#000000',
+            'tree_selected_bg': '#0078d7',
+            'tree_selected_fg': '#ffffff',
+            'tree_heading_bg': '#f0f0f0',
+            'tree_heading_fg': '#000000',
+            'tree_heading_active_bg': '#e0e0e0',
+            'tree_heading_active_fg': '#000000',
+            'tab_bg': '#f0f0f0',
+            'tab_fg': '#000000',
+            'tab_selected_bg': '#ffffff',
+            'tab_selected_fg': '#000000',
+            'tab_active_bg': '#e0e0e0',
+            'tab_active_fg': '#000000',
+            'tab_active_fill': '#ffffff',
+        }
+    }
+
 def apply_light_theme(root):
     """
     Apply a light theme to the application.
@@ -130,25 +190,71 @@ def apply_light_theme(root):
     The light theme uses the system's default Tkinter theme with minimal
     custom styling to ensure a clean, native look across different platforms.
     """
+    # Get theme settings
+    theme = get_theme()['light_mode']
+    
     # Reset to default theme
-    style = ttk.Style()
+    style = ttk.Style(root)
     style.theme_use('default')
     
-    # Configure the main window
-    root.configure(bg='#f0f0f0')
+    # Apply theme to root window
+    root.configure(bg=theme['bg'])
     
-    # Configure ttk style
+    # Configure base styles
     style.configure('.',
-                  background='#f0f0f0',
-                  foreground='#000000',
-                  fieldbackground='#ffffff',
-                  selectbackground='#0078d7',
-                  selectforeground='#ffffff',
-                  insertcolor='#000000',
-                  troughcolor='#e0e0e0',
-                  highlightthickness=0,
-                  borderwidth=0)
+                  background=theme['bg'],
+                  foreground=theme['fg'],
+                  fieldbackground=theme['entry_bg'],
+                  selectbackground=theme['accent'],
+                  selectforeground=theme['tree_selected_fg'],
+                  insertcolor=theme['fg'])
     
-    # Reset specific widget styles to default
-    for widget in ['TFrame', 'TLabel', 'TButton', 'TEntry', 'TCombobox', 'TNotebook', 'Treeview']:
-        style.configure(widget, **style.configure('.'))
+    # Configure specific widgets
+    style.configure('TButton',
+                  background=theme['button_bg'],
+                  foreground=theme['button_fg'])
+    
+    style.map('TButton',
+             background=[('active', theme['button_active_bg'])],
+             foreground=[('active', theme['button_active_fg'])])
+    
+    style.map('TEntry',
+             fieldbackground=[('readonly', theme['bg'])])
+    
+    style.map('TCombobox',
+             fieldbackground=[('readonly', theme['entry_bg'])],
+             selectbackground=[('readonly', theme['accent'])],
+             selectforeground=[('readonly', theme['tree_selected_fg'])])
+    
+    style.configure('Treeview',
+                  background=theme['tree_bg'],
+                  fieldbackground=theme['tree_bg'],
+                  foreground=theme['tree_fg'])
+    
+    style.map('Treeview',
+             background=[('selected', theme['tree_selected_bg'])],
+             foreground=[('selected', theme['tree_selected_fg'])])
+    
+    style.configure('Treeview.Heading',
+                  background=theme['tree_heading_bg'],
+                  foreground=theme['tree_heading_fg'],
+                  relief='flat')
+    
+    style.map('Treeview.Heading',
+             background=[('active', theme['tree_heading_active_bg'])],
+             foreground=[('active', theme['tree_heading_active_fg'])])
+    
+    style.configure('TNotebook',
+                  background=theme['bg'])
+    
+    style.configure('TNotebook.Tab',
+                  background=theme['tab_bg'],
+                  foreground=theme['tab_fg'],
+                  padding=[10, 5])
+    
+    style.map('TNotebook.Tab',
+             background=[('selected', theme['tab_selected_bg']),
+                       ('active', theme['tab_active_bg'])],
+             foreground=[('selected', theme['tab_selected_fg']),
+                       ('active', theme['tab_active_fg'])],
+             expand=[('selected', [1, 1, 1, 0])])

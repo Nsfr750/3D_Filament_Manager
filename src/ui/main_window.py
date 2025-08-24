@@ -105,6 +105,23 @@ class MainWindow(ttk.Frame):
             label=f"🔄 {tr('reload_filaments')}",
             command=self.controller.reload_filaments
         )
+        
+        # Add Backup submenu
+        backup_menu = tk.Menu(file_menu, tearoff=0)
+        backup_menu.add_command(
+            label=f"💾 {tr('create_backup')}",
+            command=self.controller.create_backup
+        )
+        backup_menu.add_command(
+            label=f"⏮️ {tr('restore_backup')}",
+            command=self.controller.restore_backup
+        )
+        backup_menu.add_command(
+            label=f"📋 {tr('manage_backups')}",
+            command=self.controller.manage_backups
+        )
+        file_menu.add_cascade(label=f"🔒 {tr('backup')}", menu=backup_menu)
+        
         file_menu.add_separator()
         file_menu.add_command(
             label=f"⬆️ {tr('import_filaments')}",

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from src.config import APP_VERSION
-from .version import get_version
+from src.version_info import APP_VERSION
 from .lang import tr
 
 def show_about_dialog(parent, dark_mode=False):

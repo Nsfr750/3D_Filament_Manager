@@ -14,7 +14,7 @@ An optional qualifier (alpha, beta, rc, etc.) can be added for pre-release versi
 """
 VERSION_MAJOR = 1
 VERSION_MINOR = 1
-VERSION_PATCH = 0
+VERSION_PATCH = 1
 
 # Additional version qualifiers
 VERSION_QUALIFIER = ''  # Could be 'alpha', 'beta', 'rc', or ''

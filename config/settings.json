@@ -1,4 +1,14 @@
 {
     "dark_mode": true,
-    "language": "en"
+    "language": "en",
+    "backup": {
+        "enabled": true,
+        "frequency": "weekly",
+        "max_backups": 10,
+        "include_logs": true,
+        "backup_on_startup": true,
+        "backup_on_exit": true,
+        "last_backup": null,
+        "backup_dir": "X:\\GitHub\\3D_Filament_Manager\\backups"
+    }
 }
