@@ -72,3 +72,4 @@ error.log
 *.tmp
 pyinstaller_build_win.py
 build.bat
+Setup.txt
