@@ -72,9 +72,7 @@ def show_sponsor_dialog(parent, dark_mode=False):
     # Define buttons
     buttons = [
         (tr('sponsor_on_github'), "https://github.com/sponsors/Nsfr750"),
-        (tr('join_discord'), "https://discord.gg/ryqNeuRYjD"),
-        (tr('buy_me_a_coffee'), "https://paypal.me/3dmega"),
-        (tr('join_the_patreon'), "https://www.patreon.com/Nsfr750")
+        (tr('buy_me_a_coffee'), "https://paypal.me/3dmega")
     ]
     
     # Add buttons
