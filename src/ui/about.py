@@ -47,7 +47,7 @@ def show_about_dialog(parent, dark_mode=False):
     
     # Load and display logo
     try:
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'assets', 'logo.png')
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'src', 'assets', 'logo.png')
         if os.path.exists(logo_path):
             # Open and resize the image
             img = Image.open(logo_path)

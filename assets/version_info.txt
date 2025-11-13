@@ -1,8 +1,0 @@
-# 3D Filament Manager Version Information
-Version: 1.1.1
-Build Date: 2025-08-23 15:45:17 UTC
-Author: Nsfr750
-License: GPL-3.0-or-later
-Website: https://github.com/Nsfr750/PDF_finder
-Source: https://github.com/Nsfr750/PDF_finder
-Issues: https://github.com/Nsfr750/PDF_finder/issues

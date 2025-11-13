@@ -18,7 +18,7 @@ def main():
     
     # Set application icon
     try:
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'logo.png')
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src', 'assets', 'logo.png')
         if os.path.exists(icon_path):
             icon = tk.PhotoImage(file=icon_path)
             root.iconphoto(True, icon)
