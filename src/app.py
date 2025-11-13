@@ -9,6 +9,7 @@ from pathlib import Path
 from src.data.filament_manager import FilamentManager
 from src.ui.main_window import MainWindow
 from src.ui.dialogs import AddEditDialog, show_backup_dialog, BarcodeDialog, PriceTrackerDialog
+from src.ui.dialogs.settings_dialog import show_settings_dialog
 from src.config import APP_DATA_DIR, BACKUP_DIR, ensure_directories_exist
 from src.version_info import APP_VERSION
 from src.ui.about import show_about_dialog
@@ -380,6 +381,42 @@ class FilamentManagerApp:
         from src.ui.sponsor import show_sponsor_dialog
         show_sponsor_dialog(self.root, dark_mode=self.dark_mode)
 
+    def show_settings(self):
+        """Show the settings dialog."""
+        def on_settings_saved(new_settings):
+            # Update settings
+            self.settings = new_settings
+            
+            # Apply theme if changed
+            if 'dark_mode' in new_settings and new_settings['dark_mode'] != self.dark_mode:
+                self.dark_mode = new_settings['dark_mode']
+                self._apply_theme()
+                
+            # Apply language if changed
+            if 'language' in new_settings and new_settings['language'] != self.settings.get('language'):
+                set_language(new_settings['language'])
+                # Refresh the UI to show new language
+                self.main_window.destroy()
+                self.main_window = MainWindow(self.root, self)
+                self.main_window.pack(fill=tk.BOTH, expand=True)
+                
+            # Update backup settings if changed
+            if 'backup' in new_settings:
+                self.backup_settings = new_settings['backup']
+                self.backup_manager.config.update({
+                    'backup_dir': self.backup_settings.get('backup_dir', str(BACKUP_DIR)),
+                    'max_backups': self.backup_settings.get('max_backups', 10),
+                    'auto_backup': self.backup_settings.get('enabled', True),
+                    'backup_on_exit': self.backup_settings.get('backup_on_exit', True),
+                    'include_logs': self.backup_settings.get('include_logs', True)
+                })
+                
+            # Save settings to file
+            self._save_settings()
+            
+        # Show settings dialog
+        show_settings_dialog(self.root, self.settings, on_settings_saved)
+        
     def _create_startup_backup(self):
         """Create a backup on application startup if enabled in settings."""
         try:

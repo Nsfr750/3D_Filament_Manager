@@ -170,6 +170,14 @@ class MainWindow(ttk.Frame):
             variable=self.dark_mode_var
         )
         self.dark_mode_var.trace_add('write', lambda *_: update_theme_icon())
+        
+        # Add Settings menu item
+        view_menu.add_separator()
+        view_menu.add_command(
+            label=f"⚙️ {tr('settings')}",
+            command=self.controller.show_settings
+        )
+        
         menubar.add_cascade(label=tr('view'), menu=view_menu)
         
         # Tools menu
