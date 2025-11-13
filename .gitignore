@@ -70,9 +70,6 @@ error.log
 
 # Temporary files
 *.tmp
-pyinstaller_build_win.py
-build.bat
-Setup.txt
-clean_pycache.py
-clear_cache.py
+
+/setup
 /backups
