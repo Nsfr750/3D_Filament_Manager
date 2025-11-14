@@ -74,3 +74,5 @@ error.log
 /setup
 /backups
 version.txt
+.windsurf/rules
+clean.bat
