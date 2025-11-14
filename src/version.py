@@ -11,6 +11,7 @@ from pathlib import Path
 
 # Version constants following Semantic Versioning 2.0.0
 __version__ = "1.2.0"
+__display_version__ = "1.2.0"
 __version_info__ = {
     "version": __version__,
     "major": 1,

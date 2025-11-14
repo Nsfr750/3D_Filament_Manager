@@ -1,9 +1,25 @@
+import os
+import sys
 import tkinter as tk
 from tkinter import ttk
-import os
-from PIL import Image, ImageTk
+from wand.image import Image as WandImage
+from wand.display import display as wand_display
+import io
+import base64
 from src.version_info import APP_VERSION
 from .lang import tr
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
+    path = os.path.join(base_path, relative_path)
+    print(f"Trying to load resource: {path}")  # Debug
+    return path
 
 def show_about_dialog(parent, dark_mode=False):
     """
@@ -44,20 +60,41 @@ def show_about_dialog(parent, dark_mode=False):
     # Create left frame for logo
     left_frame = ttk.Frame(container)
     left_frame.pack(side=tk.LEFT, padx=(0, 20))
-    
+
     # Load and display logo
     try:
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'src', 'assets', 'logo.png')
-        if os.path.exists(logo_path):
-            # Open and resize the image
-            img = Image.open(logo_path)
-            img = img.resize((100, 100), Image.Resampling.LANCZOS)
-            logo_img = ImageTk.PhotoImage(img)
+        # Try to get the base path for PyInstaller
+        def resource_path(relative_path):
+            """ Get absolute path to resource, works for dev and for PyInstaller """
+            try:
+                # PyInstaller creates a temp folder and stores path in _MEIPASS
+                base_path = sys._MEIPASS
+            except Exception:
+                base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             
-            # Create label to display the logo
-            logo_label = ttk.Label(left_frame, image=logo_img)
-            logo_label.image = logo_img  # Keep a reference
-            logo_label.pack(pady=10)
+            return os.path.join(base_path, relative_path)
+        
+        logo_path = resource_path(os.path.join('src', 'assets', 'logo.png'))
+        print(f"Logo path: {logo_path}")  # Debug
+        print(f"File exists: {os.path.exists(logo_path)}")  # Debug
+        if os.path.exists(logo_path):
+            # Usa Wand per aprire e ridimensionare l'immagine
+            with WandImage(filename=logo_path) as img:
+                # Ridimensiona mantenendo le proporzioni
+                img.resize(100, 100)
+                
+                # Converti in formato PNG in memoria
+                img.format = 'png'
+                img_data = img.make_blob()
+                
+                # Crea un oggetto PhotoImage da usare con Tkinter
+                b64_data = base64.b64encode(img_data).decode('utf-8')
+                logo_img = tk.PhotoImage(data=b64_data)
+                
+                # Crea e mostra l'immagine
+                logo_label = ttk.Label(left_frame, image=logo_img)
+                logo_label.image = logo_img  # Mantieni un riferimento
+                logo_label.pack(pady=10)
     except Exception as e:
         print(f"Error loading logo: {e}")
     
@@ -92,9 +129,21 @@ def show_about_dialog(parent, dark_mode=False):
     )
     description_label.pack(pady=(10, 20), fill=tk.X)
     
-    # Add close button
-    close_button = ttk.Button(main_frame, text=tr('close'), command=dialog.destroy)
-    close_button.pack(pady=(10, 0))
+    # Add close button with red background and white text
+    style = ttk.Style()
+    style.configure('Red.TButton', 
+                   background='red', 
+                   foreground='white',
+                   font=('TkDefaultFont', 10, 'bold'))
+    
+    close_button = ttk.Button(
+        main_frame, 
+        text=tr('close'), 
+        command=dialog.destroy,
+        style='Red.TButton',
+        width=10
+    )
+    close_button.pack(pady=(10, 0), side=tk.RIGHT)
     
     # Center the dialog
     dialog.update_idletasks()

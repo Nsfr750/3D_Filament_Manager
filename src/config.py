@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union
-from .version_info import APP_VERSION, VERSION_INFO, get_version, get_version_info
+from src.version import __version__, __display_version__
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 
